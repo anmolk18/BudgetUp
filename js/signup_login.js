@@ -64,6 +64,7 @@ switchClick.addEventListener("click", () => {
         .then(userInfo => {
             if(userInfo.token){
                 localStorage.token = userInfo.token
+                localStorage.id = userInfo.id
                 console.log(localStorage)
             }
         })
@@ -215,7 +216,8 @@ const mainDash = page.querySelector("main.dash-content")
 const incomes = page.querySelectorAll(".dash-nav-item")[1]
 
 class Income{
-    constructor(user_id, name, value){
+    constructor(id, user_id, name, value){
+        this.id = id
         this.user_id = user_id
         this.name = name
         this.value = value
@@ -225,27 +227,30 @@ class Income{
         const incomeBox = ce("div")
         incomeBox.className = "form-row"
         incomeBox.innerHTML = `
-            <div class="form-group col-md-8">
-                <input type="text" id="name" value="${this.name}" size="70">
+            <div class="form-group col-md-6">
+                <input type="text" id="name" value="${this.name}" size="60">
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-2">
                 <div class="input-group">
                     <div class="input-group-prepend">
                     <div class="input-group-text">$</div>
                     </div>
-                    <input type="text" id="amount" value="${this.value}" size="15">
+                    <input type="text" id="amount" value="${this.value}" size="10">
                 </div>
             </div>
-            <button style="height:40px; width:80px" type="submit" class="btn-primary">Update</button>
+                <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
+                <button style="height:40px; width:80px; margin:5px;" type="submit" id="del-income-btn" class="btn-primary">Delete</button>
         `
-        const body = mainDash.querySelector(".card-body")
-        body.append(incomeBox)
+        const singleIncome = mainDash.querySelector(".card-body")
+        singleIncome.append(incomeBox)
+
         const updateButton = incomeBox.querySelector(".btn-primary")
         updateButton.addEventListener("click", () => {
             event.preventDefault()
             const configObj = {
                 method: "PATCH",
                 headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
@@ -256,10 +261,24 @@ class Income{
             }
             fetch(`http://localhost:3000/api/v1/incomes/${this.id}`, configObj)
             .then(res => res.json())
-            .then(
-                console.log
-            )
+            .then(updatedIncome => {
+                updatedIncome.name = this.name
+                updatedIncome.value = this.value
             })
+        })
+
+        const delBtn = incomeBox.querySelector("#del-income-btn")
+        delBtn.addEventListener("click", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`
+                }
+            }
+            fetch(`http://localhost:3000/api/v1/incomes/${this.id}`, configObj)
+            .then(() => incomeBox.remove())
+        })
         
     }
 }
@@ -291,6 +310,7 @@ function incomesEvent(){
 }
 incomesEvent()
 
+
 function getIncomes(){
      const configObj = {
             method: "GET",
@@ -302,60 +322,92 @@ function getIncomes(){
          }
      fetch('http://localhost:3000/api/v1/incomes', configObj)
      .then(res => res.json())
-     .then(incomes => incomes.forEach(income => addIncome(income)))
+     .then(incomes => addIncomes(incomes)) 
      .catch(err => {
         console.error('ERROR: ' + err)
       })
 }
 
+function addIncomes(incomes){
+    incomes.forEach(income => {
+        if (income.user_id == localStorage.id){
+            addIncome(income)
+        }
+    })
+}
+
 function addIncome(income){
     let add
-    let newIncome = new Income(income.user_id, income.name, income.value)
+    let newIncome = new Income(income.id, income.user_id, income.name, income.value)
     add = newIncome.render()
 }
 
 function addButtonEvent(){
     const addButton = mainDash.querySelectorAll(".btn-primary")[0]
     addButton.addEventListener("click", () => {
-    event.preventDefault()
-    const newIncomeBox = ce("div")
-    newIncomeBox.className = "form-row"
-    newIncomeBox.innerHTML = `
-        <div class="form-group col-md-8">
-            <input type="text" placeholder="Income Source" size="70">
-        </div>
-        <div class="form-group col-md-4">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                <div class="input-group-text">$</div>
-                </div>
-                <input type="text" placeholder="Amount" size="15">
-            </div>
-        </div>
-        <button style="height:40px; width:50px" type="submit" id="add-income-btn" class="btn-primary">Add</button>
-    `
-
-    const body = mainDash.querySelector(".card-body")
-    body.append(newIncomeBox)
-    addIncomeEvent()
-    })
-}
-
-function updateButtonEvent(){
-    const updateButton = mainDash.querySelectorAll(".btn-primary")[1]
-    updateButton.addEventListener("click", () => {
         event.preventDefault()
+        const newIncomeBox = ce("form")
+        newIncomeBox.className = "new-income"
+        newIncomeBox.innerHTML = `
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="text" placeholder="Income Source" size="60">
+                </div>
+                <div class="form-group col-md-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">$</div>
+                        </div>
+                        <input type="text" placeholder="Amount" size="10">
+                    </div>
+                </div>
+                <button style="height:40px; width:80px; margin:5px;" type="submit" id="add-income-btn" class="btn-primary">Add</button>
+                <button style="height:40px; width:80px; margin:5px;" id="del-income-btn" class="btn-primary">Delete</button>
+            </div>
+        `
         
+        const cardBody = mainDash.querySelector(".card-body")
+        cardBody.append(newIncomeBox)
+
+        const addIncomeData = cardBody.querySelector("form.new-income")
+        addIncomeData.addEventListener("submit", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: localStorage.id, 
+                    name: event.target[0].value,
+                    value: event.target[1].value
+                })
+            }
+            fetch(`http://localhost:3000/api/v1/incomes`, configObj)
+            .then(res => res.json())
+            .then(newIncome => addIncome(newIncome))
+            newIncomeBox.innerHTML = ""
+        })
+
+        const delIncomeData = newIncomeBox.querySelector("#del-income-btn")
+        delIncomeData.addEventListener("click", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                },
+            }
+            fetch(`http://localhost:3000/api/v1/incomes/${this.id}`, configObj)
+            .then(() => newIncomeBox.remove())
+        })
+
     })
 }
 
-function addIncomeEvent(){
-   const addIncomeData = mainDash.querySelector("#add-income-btn")
-   addIncomeData.addEventListener("click", () => {
-       event.preventDefault()
 
-   })
-}
 
 
 
