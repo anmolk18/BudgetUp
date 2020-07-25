@@ -1,9 +1,12 @@
+// WHy does it logout when I refresh? localtoken?
+
 const qs = (selector) => document.querySelector(selector)
 const signUpForm = qs("form#signUp")
 const switchClick = qs("#switch-login")
 const body = qs("div#sign-up-div")
 const page = qs("div#fullPage")
 
+//Signup
 signUpForm.addEventListener("submit", () => {
     event.preventDefault()
 
@@ -22,11 +25,14 @@ signUpForm.addEventListener("submit", () => {
     .then(userInfo => {
         if(userInfo.token){
             localStorage.token = userInfo.token
+            localStorage.id = userInfo.id
             console.log(localStorage)
         }
+        homePage()
     })
 })
 
+//Switch to Login
 switchClick.addEventListener("click", () => {
     event.preventDefault()
     body.innerHTML = `
@@ -72,8 +78,10 @@ switchClick.addEventListener("click", () => {
     })
 })
 
+//All Functionality after logging in or signing up
 function homePage(){
     
+//homepage layout
 function home(){
     page.innerHTML = `
     <div class="dash">
@@ -97,18 +105,9 @@ function home(){
         </div>
         <div class="dash-app">
             <header class="dash-toolbar">
-                <a href="#!" class="menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </a>
                 <div class="tools">
                     <div class="dropdown tools-item">
-                        <a href="#" class="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                            <a class="dropdown-item" href="#!">Profile</a>
-                            <a class="dropdown-item" href="login.html">Logout</a>
-                        </div>
+                        <a href="index.html" class="" id="logoutHere"> Logout </a>
                     </div>
                 </div>
             </header>
@@ -216,7 +215,6 @@ function home(){
 home()
 
 const homePage = page.querySelectorAll(".dash-nav-item")[0]
-
 function homeEvent(){
     homePage.addEventListener("click", () => {
         event.preventDefault()
@@ -224,6 +222,15 @@ function homeEvent(){
     })
 }
 homeEvent()
+
+//Logout
+const logoutBtn = page.querySelector("#logoutHere")
+function logoutEvent(){
+    logoutBtn.addEventListener("click", () => {
+        localStorage = ""
+    })
+}
+logoutEvent()
 
 const ce = (element) => document.createElement(element)
 const mainDash = page.querySelector("main.dash-content")
@@ -279,7 +286,18 @@ class Income{
                 updatedIncome.name = this.name
                 updatedIncome.value = this.value
             })
+            updateAlert()
         })
+
+        function updateAlert(){
+            const alert = ce("div")
+            alert.className = "alert alert-success"
+            alert.innerHTML = `
+                <button type="button" class="close" data-dismiss="alert">×</button>  
+                <strong>Success!</strong> Updated income successfully!   
+            `
+            singleIncome.append(alert)
+        }
 
         const delBtn = incomeBox.querySelector("#del-income-btn")
         delBtn.addEventListener("click", () => {
@@ -316,7 +334,19 @@ function incomesEvent(){
                 </div>
             </div>
             <button type="submit" class="btn-primary">Add a New Income</button>
-        </form>
+        </form> <br>
+        <br>
+        <head>
+        <style>
+        h3 {
+            background-color: #3F84FC;
+            color: #FFFFFF;
+        }
+        </style>
+        </head>
+        <body>
+        <h3 style="text-align:center">Total Income: </h3>
+        </body>
         `
         getIncomes()
         addButtonEvent()
@@ -324,7 +354,7 @@ function incomesEvent(){
 }
 incomesEvent()
 
-
+//fetches all incomes of user
 function getIncomes(){
      const configObj = {
             method: "GET",
@@ -349,13 +379,13 @@ function addIncomes(incomes){
         }
     })
 }
-
 function addIncome(income){
     let add
     let newIncome = new Income(income.id, income.user_id, income.name, income.value)
     add = newIncome.render()
 }
 
+//When "Add Income" button is clicked
 function addButtonEvent(){
     const addButton = mainDash.querySelectorAll(".btn-primary")[0]
     addButton.addEventListener("click", () => {
@@ -422,6 +452,8 @@ function addButtonEvent(){
 }
 
 const expenses = page.querySelectorAll(".dash-nav-item")[2]
+// let allExpenses = []
+// let sum = allExpenses.reduce((a, b) => a + b)
 
 class Expense{
     constructor(id, user_id, name, value){
@@ -451,6 +483,8 @@ class Expense{
         `
         const singleExpense = mainDash.querySelector(".card-body")
         singleExpense.append(expenseBox)
+        // const singleValue = singleExpense.querySelector("#amount").value
+        // allExpenses.push(singleValue)
         
         const updateBtn = expenseBox.querySelector(".btn-primary")
         updateBtn.addEventListener("click", () => {
@@ -473,11 +507,24 @@ class Expense{
                 updatedExpense.name = this.name
                 updatedExpense.value = this.value
             })
+            updatedAlert()
         })
+
+        function updatedAlert(){
+            const alert = ce("div")
+            alert.className = "alert alert-success"
+            alert.innerHTML = `
+                <button type="button" class="close" data-dismiss="alert">×</button>  
+                <strong>Success!</strong> Updated expense successfully!   
+            `
+            singleExpense.append(alert)
+        }
+
 
         const deleteBtn = expenseBox.querySelector("#del-expense-btn")
         deleteBtn.addEventListener("click", () => {
             event.preventDefault()
+            allExpenses.filter(expense => expense.id != this.id)
             const configObj = {
                 method: "DELETE",
                 headers: {
@@ -509,7 +556,19 @@ function expensesEvent(){
                 </div>
             </div>
             <button type="submit" class="btn-primary">Add a New Expense</button>
-        </form>
+        </form> <br>
+        <br>
+        <head>
+        <style>
+        h3 {
+            background-color: #1DAB47;
+            color: #FFFFFF;
+        }
+        </style>
+        </head>
+        <body>
+        <h3 style="text-align:center">Total Expenses: </h3>
+        </body>
         `
         getExpenses()
         addBtnEvent()
@@ -517,6 +576,7 @@ function expensesEvent(){
 }
 expensesEvent()
 
+//fetches all expenses of user 
 function getExpenses(){
     const configObj = {
         method: "GET",
@@ -541,13 +601,13 @@ function addExpenses(expenses){
         }
     })
 }
-
 function addExpense(expense){
     let add
     let newExpense = new Expense(expense.id, expense.user_id, expense.name, expense.value)
     add = newExpense.render()
 }
 
+//When "Add Expense" button is clicked
 function addBtnEvent(){
     const addBtn = mainDash.querySelectorAll(".btn-primary")[0]
     addBtn.addEventListener("click", () => {
@@ -612,13 +672,6 @@ function addBtnEvent(){
 
     })
 }
-
-
-
-
-
-
-
 
 
 
