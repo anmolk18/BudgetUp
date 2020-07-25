@@ -1,7 +1,8 @@
-const expenses = document.querySelectorAll(".dash-nav-item")[2]
+const expenses = page.querySelectorAll(".dash-nav-item")[2]
 
 class Expense{
-    constructor(user_id, name, value){
+    constructor(id, user_id, name, value){
+        this.id = id
         this.user_id = user_id
         this.name = name
         this.value = value
@@ -11,22 +12,58 @@ class Expense{
         const expenseBox = ce("div")
         expenseBox.className = "form-row"
         expenseBox.innerHTML = `
-            <div class="form-group col-md-8">
-                <input type="text" value="${this.name}" size="70">
+            <div class="form-group col-md-6">
+                <input type="text" id="name" value="${this.name}" size="60">
             </div>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-2">
                 <div class="input-group">
                     <div class="input-group-prepend">
                     <div class="input-group-text">$</div>
-                    </div>
-                    <input type="text" value="${this.value}" size="15">
+                </div>
+                    <input type="text" id="amount" value="${this.value}" size="10">
                 </div>
             </div>
-            <button style="height:40px; width:80px" type="submit" class="btn-primary">Update</button>
+            <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
+            <button style="height:40px; width:80px; margin:5px;" type="submit" id="del-expense-btn" class="btn-primary">Delete</button>
         `
-        const body = mainDash.querySelector(".card-body")
-        body.append(expenseBox)
-        updateButtonEvent()
+        const singleExpense = mainDash.querySelector(".card-body")
+        singleExpense.append(expenseBox)
+        
+        const updateBtn = expenseBox.querySelector(".btn-primary")
+        updateBtn.addEventListener("click", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    name: expenseBox.querySelector("#name").value,
+                    value: expenseBox.querySelector("#amount").value
+                })
+            }
+            fetch(`http://localhost:3000/api/v1/expenses/${this.id}`, configObj)
+            .then(res => res.json())
+            .then(updatedExpense => {
+                updatedExpense.name = this.name
+                updatedExpense.value = this.value
+            })
+        })
+
+        const deleteBtn = expenseBox.querySelector("#del-expense-btn")
+        deleteBtn.addEventListener("click", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`
+                }
+            }
+            fetch(`http://localhost:3000/api/v1/expenses/${this.id}`, configObj)
+            .then(() => expenseBox.remove())
+        })
     }
 }
 
@@ -52,71 +89,108 @@ function expensesEvent(){
         </form>
         `
         getExpenses()
-        addButtonEvent()
+        addBtnEvent()
     })
 }
 expensesEvent()
 
 function getExpenses(){
-     const configObj = {
-            mode: "cors",
-            headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-         }
-     fetch('http://localhost:3000/api/v1/expenses', configObj)
-     .then(res => res.json())
-     .then(expenses => expenses.forEach(expense => addExpense(expense)))
-     .catch(err => {
+    const configObj = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            Authorization: `Bearer ${localStorage.token}`,
+            'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*',
+        }
+     }
+    fetch('http://localhost:3000/api/v1/expenses', configObj)
+    .then(res => res.json())
+    .then(expenses => addExpenses(expenses)) 
+    .catch(err => {
         console.error('ERROR: ' + err)
-      })
+    })
+}
+
+function addExpenses(expenses){
+    expenses.forEach(expense => {
+        if (expense.user_id == localStorage.id){
+            addExpense(expense)
+        }
+    })
 }
 
 function addExpense(expense){
     let add
-    let newExpense = new Expense(expense.user_id, expense.name, expense.value)
+    let newExpense = new Expense(expense.id, expense.user_id, expense.name, expense.value)
     add = newExpense.render()
 }
 
-function addButtonEvent(){
-    const addButton = mainDash.querySelectorAll(".btn-primary")[0]
-    addButton.addEventListener("click", () => {
-    event.preventDefault()
-    const newExpenseBox = ce("div")
-    newExpenseBox.className = "form-row"
-    newExpenseBox.innerHTML = `
-        <div class="form-group col-md-8">
-            <input type="text" placeholder="Expense Source" size="70">
-        </div>
-        <div class="form-group col-md-4">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                <div class="input-group-text">$</div>
-                </div>
-                <input type="text" placeholder="Amount" size="15">
-            </div>
-        </div>
-        <button style="height:40px; width:50px" type="submit" id="add-expense-btn" class="btn-primary">Add</button>
-    `
-
-    const body = mainDash.querySelector(".card-body")
-    body.append(newExpenseBox)
-    addExpenseEvent()
-    })
-}
-
-function updateButtonEvent(){
-    const updateButton = mainDash.querySelectorAll(".btn-primary")[1]
-    updateButton.addEventListener("click", () => {
+function addBtnEvent(){
+    const addBtn = mainDash.querySelectorAll(".btn-primary")[0]
+    addBtn.addEventListener("click", () => {
         event.preventDefault()
+        const newExpenseBox = ce("form")
+        newExpenseBox.className = "new-expense"
+        newExpenseBox.innerHTML = `
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="text" placeholder="Expense Source" size="60">
+                </div>
+                <div class="form-group col-md-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">$</div>
+                        </div>
+                        <input type="text" placeholder="Amount" size="10">
+                    </div>
+                </div>
+                <button style="height:40px; width:80px; margin:5px;" type="submit" id="add-expense-btn" class="btn-primary">Add</button>
+                <button style="height:40px; width:80px; margin:5px;" id="del-expense-btn" class="btn-primary">Delete</button>
+            </div>
+        `
+        
+        const newCardBody = mainDash.querySelector(".card-body")
+        newCardBody.append(newExpenseBox)
+
+        const addExpenseData = newCardBody.querySelector("form.new-expense")
+        addExpenseData.addEventListener("submit", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: localStorage.id, 
+                    name: event.target[0].value,
+                    value: event.target[1].value
+                })
+            }
+            fetch(`http://localhost:3000/api/v1/expenses`, configObj)
+            .then(res => res.json())
+            .then(newExpense => addExpense(newExpense))
+            newExpenseBox.innerHTML = ""
+        })
+
+        const delExpenseData = newExpenseBox.querySelector("#del-expense-btn")
+        delExpenseData.addEventListener("click", () => {
+            event.preventDefault()
+            const configObj = {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.token}`,
+                },
+            }
+            fetch(`http://localhost:3000/api/v1/expenses/${this.id}`, configObj)
+            .then(() => newExpenseBox.remove())
+        })
 
     })
 }
 
-function addExpenseEvent(){
-   const addExpenseData = mainDash.querySelector("#add-expense-btn")
-   addExpenseData.addEventListener("click", () => {
-       event.preventDefault()
 
-   })
-}
+
 
 

@@ -129,20 +129,6 @@ function addButtonEvent(){
     })
 }
 
-function updateButtonEvent(){
-    const updateButton = mainDash.querySelectorAll(".btn-primary")[1]
-    updateButton.addEventListener("click", () => {
-        event.preventDefault()
-        
-    })
-}
 
-function addIncomeEvent(){
-   const addIncomeData = mainDash.querySelector("#add-income-btn")
-   addIncomeData.addEventListener("click", () => {
-       event.preventDefault()
-
-   })
-}
 
 
