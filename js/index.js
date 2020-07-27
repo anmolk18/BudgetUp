@@ -1,4 +1,5 @@
-// WHy does it logout when I refresh? localtoken?
+// Why does it go to original index.html when I refresh even though localstorage doesn't clear?
+
 
 const qs = (selector) => document.querySelector(selector)
 const signUpForm = qs("form#signUp")
@@ -227,7 +228,8 @@ homeEvent()
 const logoutBtn = page.querySelector("#logoutHere")
 function logoutEvent(){
     logoutBtn.addEventListener("click", () => {
-        localStorage = ""
+        console.log("logged out")
+        localStorage.clear()
     })
 }
 logoutEvent()
@@ -351,6 +353,7 @@ function incomesEvent(){
         getIncomes()
         addButtonEvent()
     })
+
 }
 incomesEvent()
 
@@ -452,8 +455,8 @@ function addButtonEvent(){
 }
 
 const expenses = page.querySelectorAll(".dash-nav-item")[2]
-// let allExpenses = []
-// let sum = allExpenses.reduce((a, b) => a + b)
+let allExpenses = []
+let sum = allExpenses.reduce((a, b) => a + b, 0)
 
 class Expense{
     constructor(id, user_id, name, value){
@@ -461,7 +464,9 @@ class Expense{
         this.user_id = user_id
         this.name = name
         this.value = value
+        allExpenses.push(this.value)
     }
+
 
     render(){
         const expenseBox = ce("div")
@@ -483,8 +488,6 @@ class Expense{
         `
         const singleExpense = mainDash.querySelector(".card-body")
         singleExpense.append(expenseBox)
-        // const singleValue = singleExpense.querySelector("#amount").value
-        // allExpenses.push(singleValue)
         
         const updateBtn = expenseBox.querySelector(".btn-primary")
         updateBtn.addEventListener("click", () => {
@@ -575,6 +578,8 @@ function expensesEvent(){
     })
 }
 expensesEvent()
+
+
 
 //fetches all expenses of user 
 function getExpenses(){
