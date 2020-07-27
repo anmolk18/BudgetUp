@@ -1,11 +1,11 @@
-// Why does it go to original index.html when I refresh even though localstorage doesn't clear?
-
 
 const qs = (selector) => document.querySelector(selector)
 const signUpForm = qs("form#signUp")
 const switchClick = qs("#switch-login")
 const body = qs("div#sign-up-div")
 const page = qs("div#fullPage")
+let allIncomes = []
+let allExpenses = []
 
 //Signup
 signUpForm.addEventListener("submit", () => {
@@ -94,13 +94,13 @@ function home(){
                 <a href="index.html" class="spur-logo"><i class="fas fa-search-dollar"></i> <span>BudgetUp</span></a>
             </header>
             <nav class="dash-nav-list">
-                <a href="index.html" class="dash-nav-item">
+                <a href="javascript:;" class="dash-nav-item">
                     <i class="fas fa-home"></i> Home </a>
-                <a href="index.html" class="dash-nav-item">
+                <a href="javascript:;" class="dash-nav-item">
                     <i class="fas fa-dollar-sign"></i> Incomes </a>
-                <a href="index.html" class="dash-nav-item">
+                <a href="javascript:;" class="dash-nav-item">
                     <i class="fas fa-calculator"></i> Expenses </a>
-                <a href="index.html" class="dash-nav-item">
+                <a href="javascript:;" class="dash-nav-item">
                     <i class="fas fa-user"></i> Profile </a>
             </nav>
         </div>
@@ -123,7 +123,7 @@ function home(){
                                         <i class="fas fa-user"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div class="stats-number">$100</div>
+                                        <div id="MyTotalIncome" class="stats-number">$${allIncomes.reduce((a, b) => a + b, 0)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@ function home(){
                                         <i class="fas fa-cart-arrow-down"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div class="stats-number">$40</div>
+                                        <div class="stats-number">$${allExpenses.reduce((a, b) => a + b, 0)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -149,62 +149,64 @@ function home(){
                                         <i class="fas fa-phone"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div class="stats-number">$60</div>
+                                        <div class="stats-number">$${(allIncomes.reduce((a, b) => a + b, 0)) - (allExpenses.reduce((a, b) => a + b, 0))}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-6">
-                            <div class="card spur-card">
-                                <div class="card-header">
-                                    <div class="spur-card-icon">
-                                        <i class="fas fa-chart-bar"></i>
+                    <div class="col-xl-6">
+                    <div class="card spur-card">
+                        <div class="card-header">
+                            <div class="spur-card-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="spur-card-title"> Incomes </div>
+                            <div class="spur-card-menu">
+                                <div class="dropdown show">
+                                    <a class="spur-card-menu-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Action</a>
+                                        <a class="dropdown-item" href="#">Another action</a>
+                                        <a class="dropdown-item" href="#">Something else here</a>
                                     </div>
-                                    <div class="spur-card-title"> Income Bar Chart </div>
-                                    <div class="spur-card-menu">
-                                        <div class="dropdown show">
-                                            <a class="spur-card-menu-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                                <a class="dropdown-item" href="#">View More Details</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body spur-card-body-chart">
-                                    <canvas id="spurChartjsBar"></canvas>
-                                    <script>
-                                        var ctx = document.getElementById("spurChartjsBar").getContext('2d');
-                                        var myChart = new Chart(ctx, {
-                                            type: 'bar',
-                                            data: {
-                                                labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                                                datasets: [{
-                                                    label: 'Blue',
-                                                    data: [12, 19, 3, 5, 2],
-                                                    backgroundColor: window.chartColors.primary,
-                                                    borderColor: 'transparent'
-                                                }]
-                                            },
-                                            options: {
-                                                legend: {
-                                                    display: false
-                                                },
-                                                scales: {
-                                                    yAxes: [{
-                                                        ticks: {
-                                                            beginAtZero: true
-                                                        }
-                                                    }]
-                                                }
-                                            }
-                                        });
-                                    </script>
                                 </div>
                             </div>
                         </div>
+                        <div class="card-body spur-card-body-chart">
+                            <canvas id="spurChartjsDougnut"></canvas>
+                            <script>
+                                var ctx = document.getElementById("spurChartjsDougnut").getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                                        datasets: [{
+                                            label: 'Week',
+                                            data: [12, 19, 3, 5, 2],
+                                            backgroundColor: [
+                                                window.chartColors.primary,
+                                                window.chartColors.secondary,
+                                                window.chartColors.success,
+                                                window.chartColors.superwarning,
+                                                window.chartColors.danger,
+                                            ],
+                                            borderColor: '#fff',
+                                            fill: false
+                                        }]
+                                    },
+                                    options: {
+                                        legend: {
+                                            display: false
+                                        }
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
                         <!-- Doughnutchart -->
                     </div>
                 </div>
@@ -215,12 +217,12 @@ function home(){
     }
 home()
 
-const homePage = page.querySelectorAll(".dash-nav-item")[0]
+const mainHome = page.querySelectorAll(".dash-nav-item")[0]
 function homeEvent(){
-    homePage.addEventListener("click", () => {
+    mainHome.addEventListener("click", () => {
         if(localStorage.token){
         event.preventDefault()
-        home()
+        homePage()
         }
     })
 }
@@ -260,7 +262,7 @@ class Income{
                     <div class="input-group-prepend">
                     <div class="input-group-text">$</div>
                 </div>
-                    <input type="text" id="amount" value="${this.value}" size="10">
+                    <input type="text" id="incomeAmount" value="${this.value}" size="10">
                 </div>
             </div>
                 <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
@@ -268,10 +270,14 @@ class Income{
         `
         const singleIncome = mainDash.querySelector(".card-body")
         singleIncome.append(incomeBox)
-
+        allIncomes.length = 0 
+        let allAmounts = singleIncome.querySelectorAll("input#incomeAmount")
+        allAmounts.forEach(amount => allIncomes.push(parseInt(amount.value, 10)))
+        
         const updateButton = incomeBox.querySelector(".btn-primary")
         updateButton.addEventListener("click", () => {
             event.preventDefault()
+            console.log("working")
             const configObj = {
                 method: "PATCH",
                 headers: {
@@ -281,7 +287,7 @@ class Income{
                 },
                 body: JSON.stringify({
                     name: incomeBox.querySelector("#name").value,
-                    value: incomeBox.querySelector("#amount").value
+                    value: incomeBox.querySelector("#incomeAmount").value
                 })
             }
             fetch(`http://localhost:3000/api/v1/incomes/${this.id}`, configObj)
@@ -350,7 +356,7 @@ function incomesEvent(){
         </style>
         </head>
         <body>
-        <h3 style="text-align:center">Total Income: </h3>
+        <h3 id="totalIncome" style="text-align:center">Total Income: </h3>
         </body>
         `
         getIncomes()
@@ -385,6 +391,11 @@ function addIncomes(incomes){
             addIncome(income)
         }
     })
+    const sumIncomes = allIncomes.reduce((a, b) => a + b, 0)
+    const addTotalIncome = mainDash.querySelector("#totalIncome")
+    addTotalIncome.innerText = `Total Income: $${sumIncomes}`
+    // let homeIncome = page.querySelector("div#MyTotalIncome")
+    // homeIncome.innerText = `$${sumIncomes}`
 }
 function addIncome(income){
     let add
@@ -459,8 +470,6 @@ function addButtonEvent(){
 }
 
 const expenses = page.querySelectorAll(".dash-nav-item")[2]
-let allExpenses = []
-let sum = allExpenses.reduce((a, b) => a + b, 0)
 
 class Expense{
     constructor(id, user_id, name, value){
@@ -484,7 +493,7 @@ class Expense{
                     <div class="input-group-prepend">
                     <div class="input-group-text">$</div>
                 </div>
-                    <input type="text" id="amount" value="${this.value}" size="10">
+                    <input type="text" id="expenseAmount" value="${this.value}" size="10">
                 </div>
             </div>
             <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
@@ -492,6 +501,13 @@ class Expense{
         `
         const singleExpense = mainDash.querySelector(".card-body")
         singleExpense.append(expenseBox)
+        pushExpenses()
+        
+        function pushExpenses(){
+            allExpenses.length = 0
+            let allValues = singleExpense.querySelectorAll("#expenseAmount")
+            allValues.forEach(values => allExpenses.push(parseInt(values.value, 10)))    
+        }
         
         const updateBtn = expenseBox.querySelector(".btn-primary")
         updateBtn.addEventListener("click", () => {
@@ -505,7 +521,7 @@ class Expense{
                 },
                 body: JSON.stringify({
                     name: expenseBox.querySelector("#name").value,
-                    value: expenseBox.querySelector("#amount").value
+                    value: expenseBox.querySelector("#expenseAmount").value
                 })
             }
             fetch(`http://localhost:3000/api/v1/expenses/${this.id}`, configObj)
@@ -514,6 +530,7 @@ class Expense{
                 updatedExpense.name = this.name
                 updatedExpense.value = this.value
             })
+            pushExpenses()
             updatedAlert()
         })
 
@@ -575,7 +592,7 @@ function expensesEvent(){
         </style>
         </head>
         <body>
-        <h3 style="text-align:center">Total Expenses: </h3>
+        <h3 id="totalExpense" style="text-align:center">Total Expenses: </h3>
         </body>
         `
         getExpenses()
@@ -611,7 +628,9 @@ function addExpenses(expenses){
             addExpense(expense)
         }
     })
+    sumAllExpenses()
 }
+
 function addExpense(expense){
     let add
     let newExpense = new Expense(expense.id, expense.user_id, expense.name, expense.value)
