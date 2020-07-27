@@ -391,11 +391,13 @@ function addIncomes(incomes){
             addIncome(income)
         }
     })
+    sumAllIncomes()
+}
+
+function sumAllIncomes(){
     const sumIncomes = allIncomes.reduce((a, b) => a + b, 0)
     const addTotalIncome = mainDash.querySelector("#totalIncome")
     addTotalIncome.innerText = `Total Income: $${sumIncomes}`
-    // let homeIncome = page.querySelector("div#MyTotalIncome")
-    // homeIncome.innerText = `$${sumIncomes}`
 }
 function addIncome(income){
     let add
@@ -629,6 +631,12 @@ function addExpenses(expenses){
         }
     })
     sumAllExpenses()
+}
+
+function sumAllExpenses(){
+    const sumExpenses = allExpenses.reduce((a, b) => a + b, 0)
+    const addTotalExpense = mainDash.querySelector("#totalExpense")
+    addTotalExpense.innerText = `Total Expense: $${sumExpenses}`
 }
 
 function addExpense(expense){
