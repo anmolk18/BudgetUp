@@ -218,8 +218,10 @@ home()
 const homePage = page.querySelectorAll(".dash-nav-item")[0]
 function homeEvent(){
     homePage.addEventListener("click", () => {
+        if(localStorage.token){
         event.preventDefault()
         home()
+        }
     })
 }
 homeEvent()
@@ -320,6 +322,7 @@ class Income{
 // updates page layout when "Incomes" tab is clicked
 function incomesEvent(){
     incomes.addEventListener("click", () => {
+        if (localStorage.token){
         event.preventDefault()
         mainDash.innerHTML = `
         <form>
@@ -352,6 +355,7 @@ function incomesEvent(){
         `
         getIncomes()
         addButtonEvent()
+    }
     })
 
 }
@@ -543,6 +547,7 @@ class Expense{
 // updates page layout when "expenses" tab is clicked
 function expensesEvent(){
     expenses.addEventListener("click", () => {
+        if (localStorage.token){
         event.preventDefault()
         mainDash.innerHTML = `
         <form>
@@ -575,6 +580,7 @@ function expensesEvent(){
         `
         getExpenses()
         addBtnEvent()
+    }
     })
 }
 expensesEvent()
