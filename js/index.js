@@ -91,7 +91,7 @@ function home(){
                 <a href="#!" class="menu-toggle">
                     <i class="fas fa-bars"></i>
                 </a>
-                <a href="index.html" class="spur-logo"><i class="fas fa-search-dollar"></i> <span>BudgetUp</span></a>
+                <a href="javascript:;" class="spur-logo"><i class="fas fa-search-dollar"></i> <span>BudgetUp</span></a>
             </header>
             <nav class="dash-nav-list">
                 <a href="javascript:;" class="dash-nav-item">
@@ -100,15 +100,19 @@ function home(){
                     <i class="fas fa-dollar-sign"></i> Incomes </a>
                 <a href="javascript:;" class="dash-nav-item">
                     <i class="fas fa-calculator"></i> Expenses </a>
-                <a href="javascript:;" class="dash-nav-item">
-                    <i class="fas fa-user"></i> Profile </a>
             </nav>
         </div>
         <div class="dash-app">
             <header class="dash-toolbar">
                 <div class="tools">
                     <div class="dropdown tools-item">
-                        <a href="index.html" class="" id="logoutHere"> Logout </a>
+                        <a href="#" class="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                            <a href="index.html" class="dropdown-item" id="logoutHere"> Logout </a>
+                            <a href="index.html" class="dropdown-item" id="deleteAccount"> Delete this Account </a>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -237,6 +241,24 @@ function logoutEvent(){
     })
 }
 logoutEvent()
+
+//delete user
+const deleteAccountBtn = page.querySelector("#deleteAccount")
+function deleteAccountEvent(){
+    deleteAccountBtn.addEventListener("click", () => {
+        const configObj = {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${localStorage.token}`
+            }
+        }
+        fetch(`http://localhost:3000/api/v1/users/${localStorage.id}`, configObj)
+        .then(() => {
+        localStorage.clear()
+        })
+    })
+}
+deleteAccountEvent()
 
 const ce = (element) => document.createElement(element)
 const mainDash = page.querySelector("main.dash-content")
@@ -399,6 +421,7 @@ function sumAllIncomes(){
     const addTotalIncome = mainDash.querySelector("#totalIncome")
     addTotalIncome.innerText = `Total Income: $${sumIncomes}`
 }
+
 function addIncome(income){
     let add
     let newIncome = new Income(income.id, income.user_id, income.name, income.value)
