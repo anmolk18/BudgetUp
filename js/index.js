@@ -205,7 +205,7 @@ function home(){
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> 
                         <div class="col-lg-12">
                             <div class="card spur-card">
                                 <div class="card-header ">
@@ -235,12 +235,12 @@ function home(){
     </div>
     `
 
-    pieChart.style = ""
 
     fetchInc().then(allincomes => {
         allValues[0] = allincomes
         const incomeTotal = page.querySelector("#MyTotalIncome")
         incomeTotal.innerText = `$${allincomes.reduce((a,b) => a+b, 0)}`
+        budget()
     })
     
 
@@ -248,12 +248,13 @@ function home(){
         allValues[1] = allexpenses
         const expenseTotal = page.querySelector("#MyTotalExpenses")
         expenseTotal.innerText = `$${allexpenses.reduce((a,b) => a+b, 0)}`
+        budget()
     })
 
-    console.log(allValues)
+    function budget(){
     const budgetTotal = page.querySelector("#BudgetTotal")
-    // budgetTotal.innerText = `$${(allValues[0].reduce((a,b) => a+b, 0)) - (allValues[1].reduce((a,b) => a+b, 0))}`
-    // console.log(budgetTotal.innerText)
+    budgetTotal.innerText = `$${(allValues[0].reduce((a,b) => a+b, 0)) - (allValues[1].reduce((a,b) => a+b, 0))}`
+    }
 
 }
 home()
@@ -346,7 +347,6 @@ class Income{
         const updateButton = incomeBox.querySelector(".btn-primary")
         updateButton.addEventListener("click", () => {
             event.preventDefault()
-            console.log("working")
             const configObj = {
                 method: "PATCH",
                 headers: {
@@ -416,17 +416,36 @@ function incomesEvent(){
             <button type="submit" class="btn-primary">Add a New Income</button>
         </form> <br>
         <br>
-        <head>
-        <style>
-        h3 {
-            background-color: #3F84FC;
-            color: #FFFFFF;
-        }
-        </style>
-        </head>
-        <body>
-        <h3 id="totalIncome" style="text-align:center">Total Income: </h3>
-        </body>
+        <form>
+        <div class="row">
+        <div class="col-xl-12">
+            <div class="card spur-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><div class="spur-card-title"> Some Income Sources You May Be Forgetting: </div></h5>
+                </div>
+                <div class="card-body "> 
+                <ul>
+                    <li>Bonuses</li>
+                    <li>Gifts</li>
+                    <li>Stocks</li>
+                    <li>Rental Properties</li>
+                    <li>Investments</li>
+                    <li>Child Care</li>
+                    <li>High Yield Savings Accounts</li>
+                    <li>Money Market Funds</li>
+                    <li>Unemployment Benefits</li>
+                    <li>Social Security Benefits</li>
+                    <li>Inheritance Received</li>
+                    <li>Blogs You Monetized</li>
+                    <li>YouTube Channel</li>
+                    <li>Cashback Rewards Cards</li>
+                </ul>
+                </div>
+            </div>
+        </div>
+        </div>
+        </form>
+        
         `
         getIncomes()
         addButtonEvent()
@@ -464,9 +483,7 @@ function addIncomes(incomes){
 }
 
 function sumAllIncomes(){
-    const sumIncomes = allIncomes.reduce((a, b) => a + b, 0)
-    const addTotalIncome = mainDash.querySelector("#totalIncome")
-    addTotalIncome.innerText = `Total Income: $${sumIncomes}`
+    allIncomes.reduce((a, b) => a + b, 0)
 }
 
 function addIncome(income){
@@ -653,19 +670,40 @@ function expensesEvent(){
                 </div>
             </div>
             <button type="submit" class="btn-primary">Add a New Expense</button>
-        </form> <br>
-        <br>
-        <head>
-        <style>
-        h3 {
-            background-color: #1DAB47;
-            color: #FFFFFF;
-        }
-        </style>
-        </head>
-        <body>
-        <h3 id="totalExpense" style="text-align:center">Total Expenses: </h3>
-        </body>
+        </form> 
+        <form>
+        <div class="row mt-5">
+        <div class="col-xl-12">
+            <div class="card spur-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5><div class="spur-card-title"> Some Expenses You May Be Forgetting: </div></h5>
+                </div>
+                <div class="card-body "> 
+                <ul>
+                    <li>Travel Expenses</li>
+                    <li>Taxes</li>
+                    <li>Insurances</li>
+                    <li>Meals and Snacks</li>
+                    <li>School or Office Supplies</li>
+                    <li>Gas, Heat, and Other Utilities</li>
+                    <li>Maintenance</li>
+                    <li>Laundry</li>
+                    <li>Wi-Fi, TV, Cable</li>
+                    <li>Credit Card Payments</li>
+                    <li>Legal Fees</li>
+                    <li>Membership Fees</li>
+                    <li>House Management</li>
+                    <li>Personal Care Items</li>
+                    <li>Car, Movie, Lottery Tickets</li>
+                    <li>Magazines, Newspapers, Books</li>
+                    <li>Hair Care and Salon Services</li>
+                    <li>Entertainment and Recreation</li>
+                </ul>
+                </div>
+            </div>
+        </div>
+        </div>
+        </form>
         `
         getExpenses()
         addBtnEvent()
@@ -705,8 +743,6 @@ function addExpenses(expenses){
 
 function sumAllExpenses(){
     const sumExpenses = allExpenses.reduce((a, b) => a + b, 0)
-    const addTotalExpense = mainDash.querySelector("#totalExpense")
-    addTotalExpense.innerText = `Total Expense: $${sumExpenses}`
 }
 
 function addExpense(expense){
