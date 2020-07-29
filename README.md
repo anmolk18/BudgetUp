@@ -2,6 +2,8 @@
 
 BudgetUp allows users to monitor their budget by keeping track of their incomes and expenses.
 
+View screenshots of the website [here](https://drive.google.com/drive/folders/1BYtu40e1FP1vBbmL1lf-cSJnLIwwVx3u?usp=sharing).
+
 ## Technologies 
 
 ### Front-End:
