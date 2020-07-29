@@ -14,6 +14,6 @@ View screenshots of the website [here](https://drive.google.com/drive/folders/1B
 ### Back-end:
 * Ruby on Rails 
 
-View the backend repository [here](https://github.com/anmolk18/budget-tracker--backend).
+View the backend repository [here](https://github.com/anmolk18/BudgetUp--backend).
 
 #### Developed by [Anmolpreet Kaur](https://github.com/anmolk18)
