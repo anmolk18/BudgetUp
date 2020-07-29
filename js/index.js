@@ -13,7 +13,7 @@ let allValues = {}
 //Signup
 signUpForm.addEventListener("submit", () => {
     event.preventDefault()
-
+    if (event.target[0].value && event.target[1].value && event.target[2].value){
     fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -34,6 +34,10 @@ signUpForm.addEventListener("submit", () => {
         }
         homePage()
     })
+    }
+    else{
+        alert("Please fill in all fields.")
+    }
 })
 
 //Switch to Login
@@ -55,11 +59,11 @@ switchClick.addEventListener("click", () => {
                 </form>
             </div>
     `
-    //Login
-    const login = document.querySelector("form#login")
+    //Login Event
+    const login = qs("form#login")
     login.addEventListener("submit", () => {
         event.preventDefault()
-
+        if (event.target[0].value && event.target[1].value){
         fetch("http://localhost:3000/api/v1/login", {
             method: "POST",
             headers: {
@@ -80,6 +84,10 @@ switchClick.addEventListener("click", () => {
             }
         })
         homePage()
+        }
+        else{
+            alert("Please enter your username and password.")
+        }
     })
 })
 
@@ -335,8 +343,8 @@ class Income{
                     <input type="text" id="incomeAmount" value="${this.value}" size="10">
                 </div>
             </div>
-                <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
-                <button style="height:40px; width:80px; margin:5px;" type="submit" id="del-income-btn" class="btn-primary">Delete</button>
+                <button style="height:30px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
+                <button style="height:30px; width:80px; margin:5px;" type="submit" id="del-income-btn" class="btn-primary">Delete</button>
         `
         const singleIncome = mainDash.querySelector(".card-body")
         singleIncome.append(incomeBox)
@@ -512,8 +520,8 @@ function addButtonEvent(){
                         <input type="text" placeholder="Amount" size="10">
                     </div>
                 </div>
-                <button style="height:40px; width:80px; margin:5px;" type="submit" id="add-income-btn" class="btn-primary">Add</button>
-                <button style="height:40px; width:80px; margin:5px;" id="del-income-btn" class="btn-primary">Delete</button>
+                <button style="height:30px; width:80px; margin:5px;" type="submit" id="add-income-btn" class="btn-primary">Add</button>
+                <button style="height:30px; width:80px; margin:5px;" id="del-income-btn" class="btn-primary">Delete</button>
             </div>
         `
         
@@ -585,8 +593,8 @@ class Expense{
                     <input type="text" id="expenseAmount" value="${this.value}" size="10">
                 </div>
             </div>
-            <button style="height:40px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
-            <button style="height:40px; width:80px; margin:5px;" type="submit" id="del-expense-btn" class="btn-primary">Delete</button>
+            <button style="height:30px; width:80px; margin:5px;" type="submit" class="btn-primary">Update</button>
+            <button style="height:30px; width:80px; margin:5px;" type="submit" id="del-expense-btn" class="btn-primary">Delete</button>
         `
         const singleExpense = mainDash.querySelector(".card-body")
         singleExpense.append(expenseBox)
@@ -771,8 +779,8 @@ function addBtnEvent(){
                         <input type="text" placeholder="Amount" size="10">
                     </div>
                 </div>
-                <button style="height:40px; width:80px; margin:5px;" type="submit" id="add-expense-btn" class="btn-primary">Add</button>
-                <button style="height:40px; width:80px; margin:5px;" id="del-expense-btn" class="btn-primary">Delete</button>
+                <button style="height:30px; width:80px; margin:5px;" type="submit" id="add-expense-btn" class="btn-primary">Add</button>
+                <button style="height:30px; width:80px; margin:5px;" id="del-expense-btn" class="btn-primary">Delete</button>
             </div>
         `
         
