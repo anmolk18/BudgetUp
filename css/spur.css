@@ -8746,7 +8746,7 @@ body {
   margin-top: 84px; }
   @media (min-width: 992px) {
     .dash-app {
-      margin-left: 262px; }
+      margin-left: 238px; }
       .dash-compact .dash-app {
         margin-left: 0; } }
 
@@ -8815,7 +8815,7 @@ body {
     text-decoration: none; }
 
 .dash-nav {
-  min-width: 262px;
+  min-width: 238px;
   position: fixed;
   left: 0;
   top: 0;
@@ -9102,7 +9102,7 @@ body {
   z-index: 1000; }
   @media (min-width: 992px) {
     .dash-toolbar {
-      left: 262px; }
+      left: 238px; }
       .dash-compact .dash-toolbar {
         left: 0; } }
 

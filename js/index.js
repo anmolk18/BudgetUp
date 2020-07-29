@@ -4,8 +4,11 @@ const signUpForm = qs("form#signUp")
 const switchClick = qs("#switch-login")
 const body = qs("div#sign-up-div")
 const page = qs("div#fullPage")
+const pieChart = qs("div#piechart")
 let allIncomes = []
 let allExpenses = []
+let allValues = {}
+
 
 //Signup
 signUpForm.addEventListener("submit", () => {
@@ -72,6 +75,7 @@ switchClick.addEventListener("click", () => {
             if(userInfo.token){
                 localStorage.token = userInfo.token
                 localStorage.id = userInfo.id
+                localStorage.username = userInfo.username
                 console.log(localStorage)
             }
         })
@@ -79,11 +83,54 @@ switchClick.addEventListener("click", () => {
     })
 })
 
+async function fetchInc(){
+try {
+    const configObj = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            Authorization: `Bearer ${localStorage.token}`,
+            'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*',
+        }
+    }
+    let unresolvedUser = await fetch(`http://localhost:3000/api/v1/users/${localStorage.id}`, configObj)
+    let userJson = await unresolvedUser.json()
+    let allincomes = userJson.incomes.map(income => income.value)
+    return allincomes
+}
+catch(error){
+    console.error('ERROR: ' + err)
+    }
+}
+
+async function fetchExp(){
+try {
+    const configObj = {
+        method: "GET",
+        mode: "cors",
+        headers: {
+            Authorization: `Bearer ${localStorage.token}`,
+            'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*',
+        }
+    }
+    let unresolvedUser = await fetch(`http://localhost:3000/api/v1/users/${localStorage.id}`, configObj)
+    let userJson = await unresolvedUser.json()
+    let allexpenses = userJson.expenses.map(expense => expense.value)
+    return allexpenses
+}
+catch(error){
+    console.error('ERROR: ' + err)
+    }
+}
+
+
 //All Functionality after logging in or signing up
 function homePage(){
-    
+
+
 //homepage layout
 function home(){
+
     page.innerHTML = `
     <div class="dash">
         <div class="dash-nav dash-nav-dark">
@@ -104,6 +151,7 @@ function home(){
         </div>
         <div class="dash-app">
             <header class="dash-toolbar">
+                <h4>Welcome to BudgetUp!</h4>
                 <div class="tools">
                     <div class="dropdown tools-item">
                         <a href="#" class="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -116,7 +164,7 @@ function home(){
                     </div>
                 </div>
             </header>
-            <main class="dash-content">
+            <main class="dash-content" id="mainPageContent">
                 <div class="container-fluid">
                     <div class="row dash-row">
                         <div class="col-xl-4">
@@ -127,7 +175,7 @@ function home(){
                                         <i class="fas fa-user"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div id="MyTotalIncome" class="stats-number">$${allIncomes.reduce((a, b) => a + b, 0)}</div>
+                                        <div id="MyTotalIncome" class="stats-number">$</div>
                                     </div>
                                 </div>
                             </div>
@@ -140,7 +188,7 @@ function home(){
                                         <i class="fas fa-cart-arrow-down"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div class="stats-number">$${allExpenses.reduce((a, b) => a + b, 0)}</div>
+                                        <div id="MyTotalExpenses" class="stats-number">$</div>
                                     </div>
                                 </div>
                             </div>
@@ -153,64 +201,32 @@ function home(){
                                         <i class="fas fa-phone"></i>
                                     </div> -->
                                     <div class="stats-data">
-                                        <div class="stats-number">$${(allIncomes.reduce((a, b) => a + b, 0)) - (allExpenses.reduce((a, b) => a + b, 0))}</div>
+                                        <div id="BudgetTotal" class="stats-number">$</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                    <div class="col-xl-6">
-                    <div class="card spur-card">
-                        <div class="card-header">
-                            <div class="spur-card-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="spur-card-title"> Incomes </div>
-                            <div class="spur-card-menu">
-                                <div class="dropdown show">
-                                    <a class="spur-card-menu-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
+                        <div class="col-lg-12">
+                            <div class="card spur-card">
+                                <div class="card-header ">
+                                    <h5><div class="spur-card-title"> Some Budgeting Tips For You! </div></h5>
+                                </div>
+                                <div class="card-body "> 
+                                <ul>
+                                    <li>Make sure you track every income and expense.</li>
+                                    <li>Review your spending habits and reflect on how you can improve.</li>
+                                    <li>Set a realistic budget for yourself.</li>
+                                    <li>Don't be afraid to make adjustments in everyday life.</li>
+                                    <li>Understand the difference between needs and wants.</li>
+                                    <li>Life doesn't control your money, you do!</li>
+                                    <li>Save up for big purchases.</li>
+                                    <li>Reward yourself on a budget.</li>
+                                    <li>Keep a positive attitude!</li>
+                                </ul>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body spur-card-body-chart">
-                            <canvas id="spurChartjsDougnut"></canvas>
-                            <script>
-                                var ctx = document.getElementById("spurChartjsDougnut").getContext('2d');
-                                var myChart = new Chart(ctx, {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                                        datasets: [{
-                                            label: 'Week',
-                                            data: [12, 19, 3, 5, 2],
-                                            backgroundColor: [
-                                                window.chartColors.primary,
-                                                window.chartColors.secondary,
-                                                window.chartColors.success,
-                                                window.chartColors.superwarning,
-                                                window.chartColors.danger,
-                                            ],
-                                            borderColor: '#fff',
-                                            fill: false
-                                        }]
-                                    },
-                                    options: {
-                                        legend: {
-                                            display: false
-                                        }
-                                    }
-                                });
-                            </script>
-                        </div>
-                    </div>
-                </div>
+                    <div id="newpiechart">
                         <!-- Doughnutchart -->
                     </div>
                 </div>
@@ -218,7 +234,28 @@ function home(){
         </div>
     </div>
     `
-    }
+
+    pieChart.style = ""
+
+    fetchInc().then(allincomes => {
+        allValues[0] = allincomes
+        const incomeTotal = page.querySelector("#MyTotalIncome")
+        incomeTotal.innerText = `$${allincomes.reduce((a,b) => a+b, 0)}`
+    })
+    
+
+    fetchExp().then(allexpenses => {
+        allValues[1] = allexpenses
+        const expenseTotal = page.querySelector("#MyTotalExpenses")
+        expenseTotal.innerText = `$${allexpenses.reduce((a,b) => a+b, 0)}`
+    })
+
+    console.log(allValues)
+    const budgetTotal = page.querySelector("#BudgetTotal")
+    // budgetTotal.innerText = `$${(allValues[0].reduce((a,b) => a+b, 0)) - (allValues[1].reduce((a,b) => a+b, 0))}`
+    // console.log(budgetTotal.innerText)
+
+}
 home()
 
 const mainHome = page.querySelectorAll(".dash-nav-item")[0]
@@ -236,8 +273,14 @@ homeEvent()
 const logoutBtn = page.querySelector("#logoutHere")
 function logoutEvent(){
     logoutBtn.addEventListener("click", () => {
+        var confirmLogout = confirm("Are you sure you want to log out?")
+        if(confirmLogout == false){
+            event.preventDefault()
+        }
+        else{
         console.log("logged out")
         localStorage.clear()
+        }
     })
 }
 logoutEvent()
@@ -246,6 +289,11 @@ logoutEvent()
 const deleteAccountBtn = page.querySelector("#deleteAccount")
 function deleteAccountEvent(){
     deleteAccountBtn.addEventListener("click", () => {
+        var confirmDelete = confirm("Are you sure you want to delete this account?")
+        if(confirmDelete == false){
+            event.preventDefault()
+        }
+        else{
         const configObj = {
             method: "DELETE",
             headers: {
@@ -253,9 +301,8 @@ function deleteAccountEvent(){
             }
         }
         fetch(`http://localhost:3000/api/v1/users/${localStorage.id}`, configObj)
-        .then(() => {
-        localStorage.clear()
-        })
+        .then(localStorage.clear())
+    }
     })
 }
 deleteAccountEvent()
@@ -733,7 +780,6 @@ function addBtnEvent(){
 
     })
 }
-
 
 
 }
